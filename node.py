@@ -8,24 +8,43 @@
 
 VERSION = "4.2.5.0"
 
-# Bis specific modules
-import log, options, connections, peershandler, apihandler
-
-import shutil, socketserver, base64, hashlib, os, re, sqlite3, sys, threading, time, socks, random, keys, math, requests, tarfile, essentials, glob
+import base64
+import glob
+import hashlib
+import math
+import os
+import random
+import re
+import shutil
+import socketserver
+import sqlite3
+import sys
+import tarfile
+import threading
+import time
 from decimal import *
-import tokensv2 as tokens
-import aliases
-from quantizer import *
-from ann import ann_get, ann_ver_get
-from essentials import fee_calculate
 
-from Crypto.Hash import SHA
-from Crypto.PublicKey import RSA
-from Crypto.Signature import PKCS1_v1_5
+import requests
+import socks
+from Cryptodome.Hash import SHA
+from Cryptodome.PublicKey import RSA
+from Cryptodome.Signature import PKCS1_v1_5
 
-import mempool as mp
-import plugins
-
+from utils import aliases
+from utils import apihandler
+from utils import connections
+from utils import essentials
+from utils import keys
+# Bis specific modules
+from utils import log
+from utils import mempool as mp
+from utils import options
+from utils import peershandler
+from utils import plugins
+from utils import tokensv2 as tokens
+from utils.essentials import fee_calculate
+from utils.quantizer import *
+from utils.ann import ann_get, ann_ver_get
 
 # load config
 # global ban_threshold

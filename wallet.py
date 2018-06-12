@@ -2,22 +2,50 @@
 
 # icons created using http://www.winterdrache.de/freeware/png2ico/
 
-import sqlite3
-import PIL.Image, PIL.ImageTk, pyqrcode, os, hashlib, time, base64, connections, icons, log, socks, ast, options, tarfile, glob, essentials, re, platform
-from tokens import *
-from decimal import *
-from bisurl import *
-from quantizer import quantize_eight
+import ast
+import base64
 import csv
 import glob
-import recovery
-from essentials import fee_calculate
+import hashlib
+import os
+import platform
+import re
+import sqlite3
+import tarfile
+import time
+import webbrowser
+from datetime import datetime
+from decimal import *
+from tkinter import *
+from tkinter import filedialog, messagebox, ttk
 
 import matplotlib
+import PIL.Image
+import PIL.ImageTk
+import pyqrcode
+import socks
+from Cryptodome.Cipher import AES, PKCS1_OAEP
+from Cryptodome.Hash import SHA
+from Cryptodome.PublicKey import RSA
+from Cryptodome.Random import get_random_bytes
+from Cryptodome.Signature import PKCS1_v1_5
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
+                                               NavigationToolbar2TkAgg)
+from matplotlib.figure import Figure
+
+from utils import connections
+from utils import essentials
+from utils import icons
+from utils import log
+from utils import options
+from utils import recovery
+from utils.bisurl import *
+from utils.essentials import fee_calculate
+from utils.quantizer import quantize_eight
+from utils.simplecrypt import decrypt, encrypt
+from utils.tokens import *
 
 matplotlib.use ('TkAgg')
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
-from matplotlib.figure import Figure
 
 # import keys
 
@@ -72,17 +100,7 @@ if "testnet" in version:
     port = 2829
     light_ip = ["127.0.0.1"]
 
-from datetime import datetime
-from Crypto.PublicKey import RSA
-from Crypto.Signature import PKCS1_v1_5
-from Crypto.Hash import SHA
-from Crypto.Random import get_random_bytes
-from Crypto.Cipher import AES, PKCS1_OAEP
 
-from simplecrypt import encrypt, decrypt
-from tkinter import filedialog, messagebox, ttk
-from tkinter import *
-import webbrowser
 
 # app_log = log.log("gui.log", debug_level)
 app_log = log.log ("wallet.log", debug_level, terminal_output)
@@ -547,11 +565,11 @@ def decrypt_fn(destroy_this):
 def send_confirm(amount_input, recipient_input, operation_input, openfield_input):
     amount_input = quantize_eight (amount_input)
 
-    # cryptopia check
+    # Cryptodomepia check
     if recipient_input == "edf2d63cdf0b6275ead22c9e6d66aa8ea31dc0ccb367fad2e7c08a25" and len (openfield_input) not in [16, 20]:
-        messagebox.showinfo ("Cannot send", "Identification message is missing for Cryptopia, please include it")
+        messagebox.showinfo ("Cannot send", "Identification message is missing for Cryptodomepia, please include it")
         return
-    # cryptopia check
+    # Cryptodomepia check
 
     top10 = Toplevel ()
     top10.title ("Confirm")
