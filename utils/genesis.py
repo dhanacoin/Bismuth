@@ -7,11 +7,11 @@ import sys
 import time
 import base64
 
-from Crypto.Hash import SHA256
-from Crypto.PublicKey import RSA
-from Crypto.Signature import PKCS1_v1_5
-from Crypto.Hash import SHA
-from Crypto import Random
+from Cryptodome.Hash import SHA256
+from Cryptodome.PublicKey import RSA
+from Cryptodome.Signature import PKCS1_v1_5
+from Cryptodome.Hash import SHA
+from Cryptodome import Random
 
 if os.path.isfile("privkey.der"):
     print("privkey.der found")
@@ -69,27 +69,19 @@ if os.path.isfile("static/ledger.db"):
     print("You are beyond genesis")
 else:
     # transaction processing
-    cursor = None
-    mem_cur = None
     try:
-        conn = sqlite3.connect('static/ledger.db')
-        cursor = conn.cursor()
-        cursor.execute("CREATE TABLE transactions (block_height INTEGER, timestamp, address, recipient, amount, signature, public_key, block_hash, fee, reward, operation, openfield)")
-        cursor.execute("INSERT INTO transactions VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", ("1", timestamp, 'genesis', address, '0', str(signature_enc), public_key_hashed, block_hash, 0, 1, 1, 'genesis'))  # Insert a row of data
-        conn.commit()  # Save (commit) the changes
+        with sqlite3.connect('static/ledger.db') as ledger:
+            cursor = ledger.cursor()
+            cursor.execute("CREATE TABLE transactions (block_height INTEGER, timestamp, address, recipient, amount, signature, public_key, block_hash, fee, reward, operation, openfield)")
+            cursor.execute("INSERT INTO transactions VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", ("1", timestamp, 'genesis', address, '0', str(signature_enc), public_key_hashed, block_hash, 0, 1, 1, 'genesis'))  # Insert a row of data
+            ledger.commit()  # Save (commit) the changes
 
-        mempool = sqlite3.connect('mempool.db')
-        mem_cur = mempool.cursor()
-        mem_cur.execute("CREATE TABLE transactions (timestamp, address, recipient, amount, signature, public_key, operation, openfield)")
-        mempool.commit()
-        mempool.close()
+        with sqlite3.connect('mempool.db') as mempool:
+            cursor = mempool.cursor()
+            mem_cur.execute("CREATE TABLE transactions (timestamp, address, recipient, amount, signature, public_key, operation, openfield)")
+            mempool.commit()
 
         print("Genesis created, don't forget to change genesis address in the config file")
     except sqlite3.Error as e:
         print("Error %s:" % e.args[0])
         sys.exit(1)
-    finally:
-        if cursor is not None:
-            cursor.close()
-        if mem_cur is not None:
-            mem_cur.close()
